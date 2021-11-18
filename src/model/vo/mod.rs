@@ -1,2 +1,2 @@
-mod user_vo;
+pub(crate) mod user_vo;
 pub mod resp_vo;
