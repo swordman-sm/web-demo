@@ -59,7 +59,7 @@ impl UserService {
         return Err(Error::from("登录失败"));
     }
 
-    ///登陆后台
+    ///创建新用户
     pub async fn add(&self, arg: &UserAddDTO) -> Result<u64> {
         // 参数验证
         arg.validate()?;
@@ -67,9 +67,7 @@ impl UserService {
         if !VerifyCode::verify(
             &VcType::REG(arg.username.as_ref().unwrap().clone()),
             arg.verify_code.as_ref().unwrap(),
-        )
-            .await
-        {
+        ).await {
             return Err(Error::from("验证码错误!"));
         }
 
@@ -102,9 +100,7 @@ impl UserService {
         if !VerifyCode::verify(
             &VcType::ChangePassword(arg.username.as_ref().unwrap().clone()),
             arg.verify_code.as_ref().unwrap(),
-        )
-            .await
-        {
+        ).await {
             return Err(Error::from("验证码错误!"));
         }
         let w = Wrapper::new(&RB.driver_type()?)
