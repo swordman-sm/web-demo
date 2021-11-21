@@ -2,6 +2,7 @@ use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
 
+// #[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
 #[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct VideoReplies {
     ///编号

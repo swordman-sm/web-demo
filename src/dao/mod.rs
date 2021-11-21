@@ -19,7 +19,8 @@ async fn test_rbatis() {
     use rbatis::executor::Executor;
 
     println!("{}", &BOOT_CONFIG.mysql_url);
-    RB.link(&BOOT_CONFIG.mysql_url).await.unwrap();
+    let mysql_url = &BOOT_CONFIG.mysql_url.replace("mysql://", "");
+    RB.link(&format!("mysql://{}:{}@{}", &BOOT_CONFIG.mysql_user, &BOOT_CONFIG.mysql_password, mysql_url)).await.unwrap();
     let arg = vec![bson!(1)];
     println!("{}", arg[0]);
     // let w = RB.new_wrapper().eq("DEL_STATE", arg);

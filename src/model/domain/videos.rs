@@ -1,29 +1,30 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
-use validator_derive::Validate;
+// use validator_derive::Validate;
 
-#[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
+// #[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct Videos {
     ///编号
     pub id: Option<usize>,
     ///标题
-    #[validate(required, length(min = 2, max = 30, message = "名称必须在2-30之间"))]
+    // #[validate(required, length(min = 2, max = 30, message = "名称必须在2-30之间"))]
     pub title: Option<String>,
     ///备注
-    #[validate(required, length(min = 0, max = 200, message = "备注长度不能超过200"))]
+    // #[validate(required, length(min = 0, max = 200, message = "备注长度不能超过200"))]
     pub remark: Option<String>,
     ///封面
-    #[validate(required, length(min = 2, max = 200, message = "封面地址长度必须在2-200之间"))]
+    // #[validate(required, length(min = 2, max = 200, message = "封面地址长度必须在2-200之间"))]
     pub cover_image: Option<String>,
     ///时长(秒)
-    #[validate(required, regex(path = "\\d+", message = "时长必须是正确的数字"))]
+    // #[validate(required, regex(path = "\\d+", message = "时长必须是正确的数字"))]
     pub duration: Option<u32>,
     ///排序
-    #[validate(required, regex(path = "\\d+", message = "排序必须是有效的数字"))]
+    // #[validate(required, regex(path = "\\d+", message = "排序必须是有效的数字"))]
     pub seq: Option<isize>,
     ///状态
-    #[validate(required, regex(path = "0|1", message = "必须选择正确的状态值"))]
+    // #[validate(required, regex(path = "0|1", message = "必须选择正确的状态值"))]
     pub state: Option<u32>,
     ///创建时间
     pub created: u32,

@@ -1,16 +1,17 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
-use validator::{Validate, ValidationError};
-use validator_derive::Validate;
-use crate::model::domain::RE_USERNAME;
+// use validator::{ValidationError};
+// use validator_derive::Validate;
+// use crate::model::domain::RE_USERNAME;
 
-#[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
+// #[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct Users {
     ///编号
     pub id: Option<usize>,
     ///用户名称
-    #[validate(required, custom(function = "is_username", message = "必须是用户名称"))]
+    // #[validate(required, custom(function = "is_username", message = "必须是用户名称"))]
     pub name: Option<String>,
     ///登陆密码
     pub password: Option<String>,
@@ -38,15 +39,15 @@ pub struct Users {
     pub remark: Option<String>,
 }
 
-/// 是否是用户名称, 6-20位, 英文开头, 数字、下划线、英文
-pub fn is_username(v: &str) -> Result<(), ValidationError> {
-    let count = v.chars().count();
-    if count >= 5 && count < 20 && RE_USERNAME.is_match(v) {
-        return Ok(());
-    }
-
-    return Err(ValidationError::new("invalid identity"));
-}
+// /// 是否是用户名称, 6-20位, 英文开头, 数字、下划线、英文
+// pub fn is_username(v: &str) -> Result<(), ValidationError> {
+//     let count = v.chars().count();
+//     if count >= 5 && count < 20 && RE_USERNAME.is_match(v) {
+//         return Ok(());
+//     }
+//
+//     return Err(ValidationError::new("invalid identity"));
+// }
 
 impl Users {
     pub fn new() -> Self {
