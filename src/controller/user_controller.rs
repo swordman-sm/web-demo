@@ -1,29 +1,28 @@
-use actix_web::{Responder, web};
-use crate::model::dto::user_dto::{ChangePasswordDto, LoginReqDto, UserAddDto, UserPageDTO};
-use crate::model::vo::resp_vo::RespVo;
+use crate::model::dto::{ChangePasswordDTO, SignInDTO, UserAddDTO, UserPageDTO};
 use crate::service::USER_SERVICE;
+use actix_web::{web, Responder};
+use crate::model::vo::resp_vo::RespVO;
 
-/// 用户登陆 request mapping(返回对象为实现Responder标准的对象)
-pub async fn user_login(arg: web::Json<LoginReqDto>) -> impl Responder {
-    let vo = USER_SERVICE.login(&arg.0).await;
-    return RespVo::from_result(&vo).to_json_resp();
+/// 用户登陆
+pub async fn user_login(arg: web::Json<SignInDTO>) -> impl Responder {
+    let vo = USER_SERVICE.sign_in(&arg.0).await;
+    return RespVO::from_result(&vo).to_json_resp();
 }
 
-/// 用户新增 request mapping(返回对象为实现Responder标准的对象)
-pub async fn user_register(arg: web::Json<UserPageDTO>) -> impl Responder {
+/// 用户添加
+pub async fn user_reg(arg: web::Json<UserAddDTO>) -> impl Responder {
     let vo = USER_SERVICE.add(&arg.0).await;
-    return RespVo::from_result(&vo).to_json_resp();
+    return RespVO::from_result(&vo).to_json_resp();
 }
 
-/// 修改密码 request mapping(返回对象为实现Responder标准的对象)
-pub async fn change_password(arg: web::Json<ChangePasswordDto>) -> impl Responder {
+/// 修改密码
+pub async fn change_password(arg: web::Json<ChangePasswordDTO>) -> impl Responder {
     let vo = USER_SERVICE.change_password(&arg.0).await;
-    return RespVo::from_result(&vo).to_json_resp();
+    return RespVO::from_result(&vo).to_json_resp();
 }
 
-/// 用户分页 request mapping(返回对象为实现Responder标准的对象)
+///用户分页
 pub async fn user_page(arg: web::Json<UserPageDTO>) -> impl Responder {
     let vo = USER_SERVICE.page(&arg.0).await;
-    return RespVo::from_result(&vo).to_json_resp();
+    return RespVO::from_result(&vo).to_json_resp();
 }
-

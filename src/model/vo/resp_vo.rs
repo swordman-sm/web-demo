@@ -1,16 +1,20 @@
-use actix_web::HttpResponse;
-use serde::{Deserialize, Serialize};
+use crate::constant::enums::Error;
+use crate::constant::enums::Result;
 use serde::de::DeserializeOwned;
-use crate::constant::enums::{Error, Result}
+use serde::{Deserialize, Serialize};
+use actix_web::HttpResponse;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-pub struct RespVo<T> {
+pub struct RespVO<T> {
     pub code: Option<String>,
     pub msg: Option<String>,
     pub data: Option<T>,
 }
 
-impl<T> RespVo<T> where T: Serialize + Deserialize + Clone {
+impl<T> RespVO<T>
+    where
+        T: Serialize + DeserializeOwned + Clone,
+{
     pub fn from_result(arg: &Result<T>) -> Self {
         match arg {
             Ok(data) => Self {
@@ -22,7 +26,7 @@ impl<T> RespVo<T> where T: Serialize + Deserialize + Clone {
                 code: Some("F".to_owned()),
                 msg: Some(e.to_string()),
                 data: None,
-            }
+            },
         }
     }
 
@@ -39,7 +43,6 @@ impl<T> RespVo<T> where T: Serialize + Deserialize + Clone {
         if code_str.is_empty() {
             code_str = "FAIL".to_string();
         }
-
         Self {
             code: Some(code_str),
             msg: Some(arg.to_string()),
@@ -49,11 +52,15 @@ impl<T> RespVo<T> where T: Serialize + Deserialize + Clone {
 
     pub fn to_json_resp(&self) -> actix_http::Response {
         return HttpResponse::Ok()
-            .content_type("json").body(self.to_string());
+            .content_type("json")
+            .body(self.to_string());
     }
 }
 
-impl<T> ToString for RespVo<T> where T: Serialize + DeserializeOwned + Clone {
+impl<T> ToString for RespVO<T>
+    where
+        T: Serialize + DeserializeOwned + Clone,
+{
     fn to_string(&self) -> String {
         serde_json::to_string(self).unwrap()
     }

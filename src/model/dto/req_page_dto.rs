@@ -1,3 +1,8 @@
+use serde::{Deserialize, Serialize};
+
+use validator::Validate;
+use validator_derive::Validate;
+
 /// 资源分页DTO
 #[derive(Serialize, Deserialize, Validate, Clone, Debug)]
 pub struct ReqPageDTO {

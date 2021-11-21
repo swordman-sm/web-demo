@@ -1,10 +1,12 @@
+use serde::{Deserialize, Serialize};
+
 use validator::Validate;
 use validator_derive::Validate;
+use crate::constant::VcType;
 
-///登陆request数据对象
-#[derive(Serialize, Deserialize, Clone, Debug, Validate)]
-pub struct LoginReqDto {
-    // 类似于@NotNull 等校验注解
+/// 登陆
+#[derive(Serialize, Deserialize, Validate, Clone, Debug)]
+pub struct SignInDTO {
     #[validate(required, length(min = 6, max = 20, message = "参数错误"))]
     pub username: Option<String>,
     #[validate(required, length(min = 8, max = 20, message = "参数错误"))]
@@ -13,9 +15,9 @@ pub struct LoginReqDto {
     pub verify_code: Option<String>,
 }
 
-///用户添加request数据对象
-#[derive(Serialize, Deserialize, Clone, Debug, Validate)]
-pub struct UserAddDto {
+/// 登陆
+#[derive(Serialize, Validate, Deserialize, Clone, Debug)]
+pub struct UserAddDTO {
     #[validate(required, length(min = 6, max = 20, message = "参数错误"))]
     pub username: Option<String>,
     #[validate(required, length(min = 8, max = 20, message = "参数错误"))]
@@ -33,8 +35,8 @@ pub struct UserPageDTO {
     pub name: Option<String>,
 }
 
-///验证码校验request数据对象
-#[derive(Serialize, Deserialize, Clone, Debug, Validate)]
+/// 用户分页
+#[derive(Serialize, Deserialize, Validate, Clone, Debug)]
 pub struct VerifyCodeDTO {
     #[validate(required)]
     pub vc_type: Option<VcType>,
@@ -42,11 +44,13 @@ pub struct VerifyCodeDTO {
     pub len: usize,
 }
 
-fn verify_code_default_len() -> usize { 4 }
+fn verify_code_default_len() -> usize {
+    4
+}
 
-///修改密码request数据对象
-#[derive(Serialize, Deserialize, Clone, Debug, Validate)]
-pub struct ChangePasswordDto {
+/// 用户分页
+#[derive(Serialize, Deserialize, Validate, Clone, Debug)]
+pub struct ChangePasswordDTO {
     #[validate(required, length(min = 6, max = 20, message = "参数错误"))]
     pub username: Option<String>,
     #[validate(required, length(min = 8, max = 20, message = "参数错误"))]
@@ -57,3 +61,26 @@ pub struct ChangePasswordDto {
     pub verify_code: Option<String>,
 }
 
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_json() {
+        let vc = VerifyCodeDTO {
+            vc_type: Some(VcType::REG("zhang".to_owned())),
+            len: 4,
+        };
+
+        let serialized = serde_json::to_string(&vc).unwrap();
+
+        println!("serialized = {}", serialized);
+
+        let deserialized: VerifyCodeDTO = serde_json::from_str(&serialized).unwrap();
+
+        println!("deserialized = {:?}", deserialized);
+
+        assert_eq!(deserialized.len, vc.len);
+        assert_eq!(deserialized.vc_type, vc.vc_type);
+    }
+}
