@@ -68,7 +68,7 @@ mod tests {
     #[test]
     fn test_json() {
         let vc = VerifyCodeDTO {
-            vc_type: Some(VcType::REG("zhang".to_owned())),
+            vc_type: Some(VcType::Register("zhang".to_owned())),
             len: 4,
         };
 

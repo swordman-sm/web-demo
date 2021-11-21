@@ -1,3 +1,4 @@
+use rbatis::crud::CRUD;
 use rbatis::plugin::page::{Page, PageRequest};
 
 use rbatis::wrapper::Wrapper;
@@ -12,11 +13,11 @@ use crate::model::dto::SignInDTO;
 use crate::model::dto::UserAddDTO;
 use crate::model::dto::UserPageDTO;
 use crate::model::vo::SignInVO;
-use crate::service::{CacheKey, CACHE_SERVICE};
-use crate::util::jwt_util::JWTToken;
-use crate::util::password_encoder::PasswordEncoder;
-use crate::util::rand_util::RandUtil;
-use crate::util::verify_code::VerifyCode;
+use crate::service::{CacheKey, REDIS_SERVICE};
+use crate::utils::jwt_util::JWTToken;
+use crate::utils::password_util::PasswordUtil;
+use crate::utils::rand_util::RandUtil;
+use crate::utils::verify_code_util::VerifyCode;
 use validator::Validate;
 use crate::constant::VcType;
 
@@ -29,16 +30,14 @@ impl UserService {
         arg.validate()?;
         // 验证验证码
         if !VerifyCode::verify(
-            &VcType::SignIn(arg.username.as_ref().unwrap().clone()),
+            &VcType::Login(arg.username.as_ref().unwrap().clone()),
             arg.verify_code.as_ref().unwrap(),
-        )
-            .await
-        {
+        ).await {
             return Err(Error::from("验证码错误!"));
         }
         let w = Wrapper::new(&RB.driver_type()?)
             .eq("username", &arg.username);
-        let user: Option<TmUser> = RB.fetch_by_wrapper( w).await?;
+        let user: Option<TmUser> = RB.fetch_by_wrapper(w).await?;
         if user.is_none() {
             return Err(Error::from(format!(
                 "用户:{} 不存在!",
@@ -47,7 +46,7 @@ impl UserService {
         }
         let user = user.unwrap();
         // check pwd
-        if !PasswordEncoder::verify(
+        if !PasswordUtil::verify(
             user.password.as_ref().unwrap(),
             arg.password.as_ref().unwrap(),
             user.salt.as_ref().unwrap(),
@@ -57,8 +56,7 @@ impl UserService {
         let jwt = JWTToken::new(user.username.as_ref().unwrap());
         // let secret = RandUtil::rand_code(32);
         let secret = &BOOT_CONFIG.jwt_secret;
-        CACHE_SERVICE
-            .put_string(
+        REDIS_SERVICE.add_string_value(
                 &CacheKey::JwtSecret(user.username.as_ref().unwrap().clone()),
                 &secret,
             )
@@ -80,7 +78,7 @@ impl UserService {
         arg.validate()?;
         // 验证验证码
         if !VerifyCode::verify(
-            &VcType::REG(arg.username.as_ref().unwrap().clone()),
+            &VcType::Register(arg.username.as_ref().unwrap().clone()),
             arg.verify_code.as_ref().unwrap(),
         )
             .await
@@ -89,9 +87,8 @@ impl UserService {
         }
 
         let w = Wrapper::new(&RB.driver_type()?)
-            .eq("username", &arg.username)
-            .check()?;
-        let user: Option<TmUser> = RB.fetch_by_wrapper("", &w).await?;
+            .eq("username", &arg.username);
+        let user: Option<TmUser> = RB.fetch_by_wrapper(w).await?;
         match user {
             Some(_) => {
                 return Err(Error::from("用户已存在!"));
@@ -102,12 +99,12 @@ impl UserService {
         user.username = arg.username.clone();
         user.user_no = Some(RandUtil::rand_code(32));
         let salt = RandUtil::rand_code(32);
-        user.password = Some(PasswordEncoder::encode(
+        user.password = Some(PasswordUtil::encode(
             arg.password.as_ref().unwrap(),
             &salt,
         ));
         user.salt = Some(salt);
-        let res = RB.save("", &user).await?;
+        let res = RB.save(&user, &[]).await?;
         Ok(res.rows_affected)
     }
 
@@ -122,10 +119,9 @@ impl UserService {
         {
             return Err(Error::from("验证码错误!"));
         }
-        let w = Wrapper::new(&RB.driver_type()?)
-            .eq("username", &arg.username)
-            .check()?;
-        let user: Option<TmUser> = RB.fetch_by_wrapper("", &w).await?;
+        let mut w = Wrapper::new(&RB.driver_type()?)
+            .eq("username", &arg.username);
+        let user: Option<TmUser> = RB.fetch_by_wrapper(w).await?;
         if user.is_none() {
             return Err(Error::from(format!(
                 "用户:{} 不存在!",
@@ -134,7 +130,7 @@ impl UserService {
         }
         let mut user = user.unwrap();
         // check pwd
-        if !PasswordEncoder::verify(
+        if !PasswordUtil::verify(
             user.password.as_ref().unwrap(),
             arg.old_password.as_ref().unwrap(),
             user.salt.as_ref().unwrap(),
@@ -142,19 +138,22 @@ impl UserService {
             return Err(Error::from("密码不正确!"));
         }
         let salt = RandUtil::rand_code(32);
-        user.password = Some(PasswordEncoder::encode(
+        user.password = Some(PasswordUtil::encode(
             arg.new_password.as_ref().unwrap(),
             &salt,
         ));
         user.salt = Some(salt);
-        let i = RB.update_by_wrapper("", &user, &w, true).await?;
+
+        w = Wrapper::new(&RB.driver_type()?)
+            .eq("username", &arg.username);
+        let i = RB.update_by_wrapper(&user, w, &[]).await?;
         return Ok(i == 1);
     }
 
     pub async fn page(&self, arg: &UserPageDTO) -> Result<Page<TmUser>> {
         let w = Wrapper::new(&RB.driver_type()?);
         let page_req = PageRequest::new(arg.page.unwrap_or(1), arg.size.unwrap_or(10));
-        let data: Page<TmUser> = RB.fetch_page_by_wrapper("", &w, &page_req).await?;
+        let data: Page<TmUser> = RB.fetch_page_by_wrapper(w, &page_req).await?;
         Ok(data)
     }
 }

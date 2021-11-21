@@ -11,10 +11,7 @@ pub struct RespVO<T> {
     pub data: Option<T>,
 }
 
-impl<T> RespVO<T>
-    where
-        T: Serialize + DeserializeOwned + Clone,
-{
+impl<T> RespVO<T> where T: Serialize + DeserializeOwned + Clone, {
     pub fn from_result(arg: &Result<T>) -> Self {
         match arg {
             Ok(data) => Self {

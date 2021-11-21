@@ -1,7 +1,7 @@
 use crate::constant::enums::Error;
 use crate::constant::enums::Result;
 use crate::model::dto::VerifyCodeDTO;
-use crate::util::verify_code::VerifyCode;
+use crate::utils::verify_code_util::VerifyCode;
 use log;
 use validator::Validate;
 

@@ -6,21 +6,18 @@ use serde::Serialize;
 use crate::constant::enums::CacheKey;
 
 ///缓存服务
-pub struct CacheService {
+pub struct RedisService {
     pub client: redis::Client,
 }
 
-impl CacheService {
+impl RedisService {
     pub fn new(url: &str) -> Self {
         let client = redis::Client::open(url).unwrap();
         info!("connect redis success!");
         Self { client }
     }
 
-    pub async fn put_json<T>(&self, k: &CacheKey, v: &T) -> Result<String>
-        where
-            T: Serialize,
-    {
+    pub async fn add_json_value<T>(&self, k: &CacheKey, v: &T) -> Result<String> where T: Serialize, {
         let mut conn = self.client.get_async_connection().await?;
         let data = serde_json::to_string(v)?;
         let r: String = redis::cmd("SET")
@@ -31,10 +28,7 @@ impl CacheService {
         Ok(r)
     }
 
-    pub async fn get_json<T>(&self, k: &CacheKey) -> Result<T>
-        where
-            T: DeserializeOwned,
-    {
+    pub async fn get_json_value<T>(&self, k: &CacheKey) -> Result<T> where T: DeserializeOwned, {
         let mut conn = self.client.get_async_connection().await?;
         let r: String = redis::cmd("GET")
             .arg(k.get_key())
@@ -44,7 +38,7 @@ impl CacheService {
         Ok(data)
     }
 
-    pub async fn put_string(&self, k: &CacheKey, v: &str) -> Result<String> {
+    pub async fn add_string_value(&self, k: &CacheKey, v: &str) -> Result<String> {
         let mut conn = self.client.get_async_connection().await?;
         let r: String = redis::cmd("SET")
             .arg(k.get_key())
@@ -54,7 +48,7 @@ impl CacheService {
         Ok(r)
     }
 
-    pub async fn get_string(&self, k: &CacheKey) -> Result<Option<String>> {
+    pub async fn get_string_value(&self, k: &CacheKey) -> Result<Option<String>> {
         let mut conn = self.client.get_async_connection().await?;
         let r: Option<String> = redis::cmd("GET")
             .arg(k.get_key())

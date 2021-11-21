@@ -1,5 +1,5 @@
 use crate::config;
-use crate::util::jwt_util::JWTToken;
+use crate::utils::jwt_util::JWTToken;
 use actix_http::error::Error;
 use actix_web::dev::ServiceRequest;
 use actix_web::HttpResponse;

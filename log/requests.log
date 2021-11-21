@@ -1,0 +1,3 @@
+2021-11-21T17:21:44.918210800+08:00 - Starting 16 workers
+2021-11-21T17:21:44.919620600+08:00 - Starting "actix-web-service-127.0.0.1:8000" service on 127.0.0.1:8000
+2021-11-21T18:21:13.746970100+08:00 - SIGINT received, exiting

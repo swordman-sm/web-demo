@@ -18,7 +18,7 @@ pub struct TmUser {
 impl TmUser {
     pub fn new() -> Self {
         let utc = Utc::now();
-        TmUser {
+        Self {
             user_no: None,
             username: None,
             password: None,
