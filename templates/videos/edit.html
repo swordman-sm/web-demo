@@ -1,0 +1,39 @@
+{% extends "_layouts/edit.html" -%}
+{% block body %}
+{{ form::input(name="title", title="标题", value=row.title) }}
+{{ form::remark(value=row.remark) }}
+{{ form::input(name="cover_image", title="封面图片", value=row.cover_image, length=380) }}
+{{ form::input(name="duration", title="时长(秒)", value=row.duration, length=95) }}
+{{ form::seq(value=row.seq) }}
+{{ form::state(name="state", title="状态", value=row.state) }}
+{{ form::input(name="content", title="说明", value=row.remark, length=380) }}
+<script>
+layui.validators = { 
+    title: function(value) { 
+        if (value.length < 2 || value.length > 50) { 
+            return '标题长度必须2-50之间';
+        }
+    },
+    remark: function(value) { 
+        if (value.length > 100) { 
+            return '备注长度不能超过100';
+        }
+    },
+    cover_imge: function(value) { 
+        if (value.length > 100) { 
+            return '封面图片长度过长';
+        }
+    },
+    duration: function(value) { 
+        if (isNaN(value)) { 
+            return '时长必须是数字';
+        }
+    },
+    seq: function(value) { 
+        if (isNaN(value)) { 
+            return '排序必须是有效的数字';
+        }
+    }
+};
+</script>
+{% endblock body -%}

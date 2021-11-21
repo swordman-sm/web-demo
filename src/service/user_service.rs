@@ -57,9 +57,9 @@ impl UserService {
         // let secret = RandUtil::rand_code(32);
         let secret = &BOOT_CONFIG.jwt_secret;
         REDIS_SERVICE.add_string_value(
-                &CacheKey::JwtSecret(user.username.as_ref().unwrap().clone()),
-                &secret,
-            )
+            &CacheKey::JwtSecret(user.username.as_ref().unwrap().clone()),
+            &secret,
+        )
             .await?;
         if let Ok(token) = jwt.create_token(&secret) {
             let sign_vo = SignInVO {
@@ -80,9 +80,7 @@ impl UserService {
         if !VerifyCode::verify(
             &VcType::Register(arg.username.as_ref().unwrap().clone()),
             arg.verify_code.as_ref().unwrap(),
-        )
-            .await
-        {
+        ).await {
             return Err(Error::from("验证码错误!"));
         }
 
