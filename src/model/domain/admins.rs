@@ -1,17 +1,17 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
-// use validator_derive::Validate;
+use validator::Validate;
+use validator_derive::Validate;
 
-// #[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
-#[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct Admins {
     ///编号
     pub id: Option<usize>,
     ///用户名称
     pub name: Option<String>,
     ///用户密码
-    // #[validate(required, length(min = 6, max = 16, message = "密码必须在6-16之间"))]
+    #[validate(required, length(min = 6, max = 16, message = "密码必须在6-16之间"))]
     pub password: Option<String>,
     ///最后登录ip
     pub last_ip: Option<String>,
@@ -28,7 +28,7 @@ pub struct Admins {
     ///更新时间
     pub updated: Option<u32>,
     ///排序
-    // #[validate(required, regex(path = "\\d+", message = "排序必须是有效的数字"))]
+    #[validate(required, range(min = - 2147483648, max = 2147483647, message = "排序必须是有效的数字"))]
     pub seq: Option<isize>,
 }
 

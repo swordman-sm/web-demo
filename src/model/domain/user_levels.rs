@@ -1,15 +1,14 @@
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
-// use validator::Validate;
-// use validator_derive::Validate;
+use validator::Validate;
+use validator_derive::Validate;
 
-// #[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
-#[derive(CRUDTable, Serialize, Deserialize, Default, Clone, Debug)]
+#[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]
 pub struct UserLevels {
     ///编号
     pub id: Option<usize>,
     ///等级名称
-    // #[validate(required, length(min = 2, max = 20, message = "名称必须在2-20之间"))]
+    #[validate(required, length(min = 2, max = 20, message = "名称必须在2-20之间"))]
     pub name: Option<String>,
     ///备注
     pub remark: Option<String>,
