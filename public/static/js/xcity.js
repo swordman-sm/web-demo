@@ -1,10 +1,10 @@
 ﻿$.fn.xcity = function(pName,cName,aName){
 
-    this.p = $(this).find('select[lay-filter=province]');
+    this.p = $(this).find('select[lay-filters=province]');
 
-    this.c = $(this).find('select[lay-filter=city]');
+    this.c = $(this).find('select[lay-filters=city]');
 
-    this.a = $(this).find('select[lay-filter=area]');
+    this.a = $(this).find('select[lay-filters=area]');
 
     this.cityList = [];
 
@@ -79,7 +79,7 @@
 
     form.on('select(city)', function(data){
         var cName = data.value;
-        var pName = $(data.elem).parents(".x-city").find('select[lay-filter=province]').val();
+        var pName = $(data.elem).parents(".x-city").find('select[lay-filters=province]').val();
         console.log(pName);
         $(data.elem).parents(".x-city").xcity(pName,cName);
     });

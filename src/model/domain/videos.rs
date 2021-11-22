@@ -1,7 +1,7 @@
 use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use rbatis::CRUDTable;
-use validator::{Validate, ValidationError};
+use validator::Validate;
 use validator_derive::Validate;
 
 #[derive(CRUDTable, Validate, Serialize, Deserialize, Default, Clone, Debug)]

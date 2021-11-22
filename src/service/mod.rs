@@ -1,6 +1,7 @@
 mod redis_service;
 mod user_service;
 mod verify_code_service;
+mod admin_roles_service;
 
 use crate::constant::enums::CacheKey;
 use redis_service::RedisService;
